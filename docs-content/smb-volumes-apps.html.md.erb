@@ -5,28 +5,34 @@ owner: Windows
 
 <strong><%= modified_date %></strong>
 
-This topic describes how to use SMB Volumes in a .NET Application. In this example, we create an application that reads and writes to an <code>note.txt</code> file, within a SMB Volume.
+This topic describes how to use Server Message Block (SMB) Volumes in a .NET Application. In this example, we create an application that reads and writes to a <code>note.txt</code> file, within a SMB Volume.
 
 
 ## <a id='prerequisites'></a>Prerequisites 
 
-The following are required to utilize SMB Volumes:
+The following is required for this example to utilize SMB Volumes. In practice, any volume share with an FQDN path works with this method:
+
 <ul>
-<li>Azure account</li>
+<li>Visual Studio</li>
+<li>An Azure account</li>
 <li>An accessible SMB Volume in Azure Cloud with a UNC path</li>
     <ul>
-	<li>If you do not have an accessible SMB Volume, refer to Create a file share in Azure Files in the Azure documentation.</li>
+	<li>If you do not have an accessible SMB Volume, refer to Create a file share in Azure Files in the <a href="http://localhost:4567/pivotalcf/2-2/windows/%E2%80%9Dhttps://docs.microsoft.com/en-us/azure/storage/files/storage-how-to-create-file-share%E2%80%9D">Azure documentation</a>.</li>
     </ul>
 <li>SMB Username</li>
 <li>SMB Password</li>
 </ul>
 
 ## <a id='steeltoe'></a> Using SMB Volumes in .NET Apps with Steeltoe
-Steeltoe is a set of client libraries. Pivotal encourages using Steeltoe in SMB Mounting, as doing so enables your application to be cloud native.
-However, you can utilize SMB Mounting with or without Steeltoe.
-Using Steeltoe requires modifying your application code. For more information, see the <a href="https://steeltoe.io/docs/">Steeltoe Documentation</a>.
+
+Steeltoe is a set of libraries that help your team write cloud native applications. Steeltoe contains functionality for mounting SMB Volumes, though you can utilize SMB Mounting without Steeltoe. Using Steeltoe requires modifying your application code. For more information, see the <a href="https://steeltoe.io/docs/">Steeltoe Documentation</a>.
 </br>
 If you do not wish to modify your application code, proceed without using Steeltoe.
+
+If you are using Steeltoe:
+<ul>
+<li>Follow the instructions to setup your config server, and set variables for <code>SMB\_PATH</code>, <code>SMB\_USERNAME</code>, and <code>SMB\_PASSWORD</code>. For more information, see <a href="https://steeltoe.io/docs/steeltoe-configuration/#2-0-config-server-provider">Config Server Provider</a> in the Steeltoe documentation.</li>
+
 ## <a id='smb-mounting'></a>SMB Mounting
 <ol>
 <li>Using CF CLI or Apps Manager, add <code>SMB_PATH</code>, <code>SMB_USERNAME</code>, and <code>SMB_PASSWORD</code>  as environment variables to your local computer or the computer you are deploying to: 
@@ -119,9 +125,8 @@ namespace NetFrameworkApp.Controllers
     }
 }
 </pre>
-</ul>
-<li>In Visual Studio, create a subdirectory in <b>Views</b> named <code>Note</code>.</li>
-<li>In Visual Studio, create a new View named <code>Index</code>. For more information on Views, see <a href="https://docs.microsoft.com/en-us/aspnet/core/mvc/views/overview?view=aspnetcore-2.2">Views in ASP.NET Core MVC</a> and <a href="https://docs.microsoft.com/en-us/aspnet/core/tutorials/first-mvc-app/adding-view?view=aspnetcore-2.2&tabs=visual-studio">Add a view to an ASP.NET Core MVC app</a> in the Microsoft Documentation.</li>
+<li> In Visual Studio, create a subdirectory in <b>Views</b> named <code>Note</code>.</li>
+<li> In Visual Studio, create a new View named <code>Index</code>. For more information on Views, see <a href="https://docs.microsoft.com/en-us/aspnet/core/mvc/views/overview?view=aspnetcore-2.2">Views in ASP.NET Core MVC</a> and <a href="https://docs.microsoft.com/en-us/aspnet/core/tutorials/first-mvc-app/adding-view?view=aspnetcore-2.2&tabs=visual-studio">Add a view to an ASP.NET Core MVC app</a> in the Microsoft Documentation.</li>
 <li>In Visual Studio, create a <code>Index.cshtml</code> file that contains the following:</li>
 <pre>
 // Index.cshtml
@@ -147,7 +152,7 @@ Running the application now would show an empty page with no errors.
 </big>
 </pre>
 
-<li>Modify the <code>NoteController.cs</code> to have an update endpoint. This endpoint saves the data posted to the endpoint back into the <code>note.txt</code>. Refer to the example code snippet below.
+<li>Modify the <code>NoteController.cs</code> to have an update endpoint. This endpoint saves the data posted to the endpoint back into the <code>note.txt</code>. Refer to the example code snippet in the following step.
 </li>
 <li>Modify the <code>NoteController.cs</code> to include the ControllerBase class <code>RedirectToAction</code> method, which redirects to the index page so the user can see what was just saved. For more information on the ControllerBase class, see the <a href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.controllerbase.redirecttoaction?view=aspnetcore-2.2">Microsoft .NET API Browser Documentation</a>. 
 </br>
