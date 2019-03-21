@@ -5,12 +5,12 @@ owner: Windows
 
 <strong><%= modified_date %></strong>
 
-This topic describes how to use Server Message Block (SMB) Volumes in a .NET Application. In this example, we create an application that reads and writes to a <code>note.txt</code> file, within a SMB Volume.
+This topic describes how to use Server Message Block (SMB) Volumes in a .NET Application. In this example, we create an application that reads and writes to a <code>note.txt</code> file within an SMB Volume share with an FQDN paths.
 
 
 ## <a id='prerequisites'></a>Prerequisites 
 
-The following is required for this example to utilize SMB Volumes. In practice, any volume share with an FQDN path works with this method:
+The following is required to utilize SMB Volumes:
 
 <ul>
 <li>Visual Studio</li>
@@ -21,43 +21,47 @@ The following is required for this example to utilize SMB Volumes. In practice, 
     </ul>
 <li>SMB Username</li>
 <li>SMB Password</li>
+<li>Windows 1803.x or Windows 1709.x Stemcell</li>
 </ul>
 
-## <a id='steeltoe'></a> Using SMB Volumes in .NET Apps with Steeltoe
+### <a id='steeltoe'></a> Using SMB Volumes in .NET Apps with Steeltoe
 
-Steeltoe is a set of libraries that help your team write cloud native applications. Steeltoe contains functionality for mounting SMB Volumes, though you can utilize SMB Mounting without Steeltoe. Using Steeltoe requires modifying your application code. For more information, see the <a href="https://steeltoe.io/docs/">Steeltoe Documentation</a>.
+Steeltoe is a set of libraries that help your team write cloud native applications. Steeltoe contains functionality for mounting SMB Volumes. Using Steeltoe requires modifying your application code. For more information, see the <a href="https://steeltoe.io/docs/">Steeltoe Documentation</a>.
 </br>
-If you do not wish to modify your application code, proceed without using Steeltoe.
-
-If you are using Steeltoe:
+</br>
+If you are using Steeltoe, add the following environment variables to your Config Server Provider
+:
 <ul>
-<li>Follow the instructions to setup your config server, and set variables for <code>SMB\_PATH</code>, <code>SMB\_USERNAME</code>, and <code>SMB\_PASSWORD</code>. For more information, see <a href="https://steeltoe.io/docs/steeltoe-configuration/#2-0-config-server-provider">Config Server Provider</a> in the Steeltoe documentation.</li>
-
-## <a id='smb-mounting'></a>SMB Mounting
-<ol>
-<li>Using CF CLI or Apps Manager, add <code>SMB_PATH</code>, <code>SMB_USERNAME</code>, and <code>SMB_PASSWORD</code>  as environment variables to your local computer or the computer you are deploying to: 
-</br>
-</br>
-	Where:
-	<ul>
-	<li><code>SMB_PATH</code> is the path to your SMB.
+<li><code>SMB\_PATH</code></li>
+<li><code>SMB\_USERNAME</code></li>
+<li><code>SMB\_PASSWORD</code></li>
+</ul>
+    Where:
+    <ul>
+    <li><code>SMB\_PATH</code> is the UNC path to your SMB.
     <ul>
     <li>If you are using the Windows 1709 Stemcell, your UNC is the IP of the machine you are using.</li>
     <li>If you are using the Windows 1803 Stemcell, your UNC is the FQDN of the machine you are using.</li>
     </ul>
-	<li><code>SMB_USERNAME</code> is your Azure account username.</li>
-	<li><code>SMB_PASSWORD</code> is  is your Azure account password.</li>
-	</ul>
+    <li><code>SMB\_USERNAME</code> is your Azure account username.</li>
+    <li><code>SMB\_PASSWORD</code> is  is your Azure account password.</li>
+    </ul>
+
+For more information on adding environment variables to your Config Server Provider, see <a href="https://steeltoe.io/docs/steeltoe-configuration/#2-0-config-server-provider">Config Server Provider</a> in the Steeltoe documentation.
+
+### <a id='steeltoe'></a> Using SMB Volumes in .NET Apps with Your Batch Profile
+
+If you do not wish to modify your application code, you can utilize SMB Mounting without Steeltoe.
+
+If you are not using Steeltoe, add the following command to your <code>.profile.bat</code> file:
 </br>
-If you are using Steeltoe:
-<ul>
-<li>Add the environment variables to the config server. For more information, see <a href="https://steeltoe.io/docs/steeltoe-configuration/#2-0-config-server-provider">Config Server Provider</a> in the Steeltoe documentation.</li>
 </br>
-</ul>
-If you are not using Steeltoe:
-<ul>
-<li>Add the following to your <code>.profile.bat</code>: <code>net use z: %SMB-PATH% %SMB-PASSWORD% /USER:SMB-USERNAME%</code></li>
-</ul>
+<code>net use z: %SMB-PATH% %SMB-PASSWORD% /USER:SMB-USERNAME%</code>
+
+## <a id='smb-mounting'></a>SMB Mounting
+<ol>
+<li>Using CF CLI or Apps Manager, add <code>SMB_PATH</code>, <code>SMB_USERNAME</code>, and <code>SMB_PASSWORD</code>  as environment variables to your local computer or the computer you are deploying using for deploying your application. 
+
 <p class="note"><strong>Note:</strong> If Visual Studio does not detect these new environment variables, restart Visual Studio.
 </p>
 <li> In Visual Studio, create a new file in your solution named <code>SMBConfiguration.cs</code>. This file is the single representation of your SMB Volume configuration and reads the connection data from the environment variables you established in the previous step.
