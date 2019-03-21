@@ -1,0 +1,121 @@
+---
+title: Creating a vSphere Windows Stemcell
+owner: Windows
+---
+
+This topic describes how to create a BOSH stemcell for Pivotal Application Service (PAS) for Windows on vSphere.
+
+##<a id='overview'></a> Overview
+
+Before you can deploy PAS for Windows on vSphere,
+you must create a BOSH stemcell for Windows, a versioned operating system image.
+The BOSH stemcell you create in this topic is based on Windows Server 2019.
+
+To create a BOSH stemcell for Windows on vSphere, do the following:
+
+1. [Create a Base VM for the BOSH Stemcell](create-base-vm)
+  <p class="note"><strong>Note</strong>: If you already have the base VM, you do not need to perform this step.
+  Proceed to step 2, Enable WinRM.</p>
+2. Enable WinRM
+3. Install MS Updates
+4. Clone the Base VM
+5. Construct the BOSH Stemcell
+6. Package the BOSH Stemcell
+
+To maintain your BOSH stemcell, follow the instructions in Patch the BOSH Stemcell.
+
+##<a id='Prerequisites'></a> Prerequisites
+
+* A vSphere/vCenter environment.
+* User has access to a Windows Server, version 1709/1803/2019 ISO.
+* Download Stembuild from a release in “Stemcells for PCF(Windows)” on PivNet based on
+your local host system operating system
+the stemcell version you want to build.
+* Download LGPO to the same folder as stembuild.
+
+<p class="note"><strong>Note:</strong> The instructions in this topic are based on vSphere 6.0 using vSphere Web Client.</p>
+
+##<a id='create-base-vm'></a>Create a Base VM for the BOSH Stemcell
+
+This section describes how to create, configure, and verify a base Windows VM
+from a volume-licensed ISO.
+
+###<a id='upload-windows-iso'></a>Upload the Windows ISO
+
+Perform the following steps to upload the Windows ISO:
+
+1. Log in to vCenter.
+1. Click **Storage** in the vCenter menu.
+1. Choose a datastore and click or create the directory where you want the Windows ISO.
+1. Click **Upload a file to datastore**, and upload the Windows ISO.
+	<p class="note"><strong>Note</strong>: You might need to install the vSphere client web plugin to upload through your browser, or <code>scp</code> the file directly to the datastore server. For more information, see the VMware vSphere <a href="https://www.vmware.com/support/pubs/vsphere-esxi-vcenter-server-pubs.html">documentation</a>.</p>
+
+###<a id='create-customize-vm'></a>Create and Customize a New VM
+
+Perform the following steps to create and customize a new VM:
+
+1. In the vSphere client, click the **VMs and Templates** view to display the inventory objects.
+1. Right-click an object and select **New Virtual Machine** > **New Virtual Machine...**.
+1. On the **Select a creation type** page, select **Create a new virtual machine** and click **Next**.
+  <%= image_tag('new-vm.png') %>
+1. On the **Select a name and folder** page, perform the following steps:
+  1. Enter a name for the VM.
+  1. Select a location for the VM.
+  1. Click **Next**.
+1. On the **Select a compute resource** page, select a compute resource to run the VM and click **Next**.
+1. On the **Select storage** page, perform the following steps:
+  1. Select a **VM Storage Policy**.
+  1. Select the destination datastore for the VM configuration files and virtual disks.
+  1. Click **Next**.
+1. On the **Select compatibility** page, for the **Compatible with** configuration setting, select **ESXi 6.0 and later** and click **Next**.
+1. On the **Select a guest OS** page, perform the following steps:
+  1. For **Guest OS Family**, select **Windows**.
+  1. For **Guest OS Version**, select **Microsoft Windows Server 2016**.
+  1. Click **Next**.
+1. On the **Customize hardware** page, configure the VM hardware and click **Next**.
+When configuring the VM hardware, select the following settings for **New Hard disk** and **New CD\DVD Drive**:
+  1. For **New Hard disk**, specify 30 GB or greater.
+  1. For **New CD\DVD Drive**, perform the following steps:
+		1. Select **Datastore ISO File**.
+		1. Select the ISO file you uploaded to your datastore and click **OK**.
+		1. Enable the **Connect At Power On** checkbox.
+1. Review the configuration settings on the **Ready to complete** page and click **Finish**.
+
+###<a id='install-windows-server'></a>Install Windows Server
+
+Perform the following steps to install Windows Server on the base VM:
+
+1. After creating the VM, click **Power On** in the **Actions** tab for your VM.
+  <%= image_tag('power-on.png') %>
+1. Select **Windows Server Standard**.
+1. Select **Custom installation**.
+1. Complete the installation process, and enter a password for the Administrator user. BOSH later randomizes this password.
+
+###<a id='verify-os'></a>Verify OS
+
+<p class="note warning"><strong>WARNING:</strong> You must complete the following procedure to verify your OS version before continuing.</p>
+
+Ensure you are using the correct the OS version by running the following PowerShell command on the Windows VM:
+
+```
+Get-CimInstance Win32_OperatingSystem | Select-Object
+Caption, Version, ServicePackMajorVersion, OSArchitecture, CSName, WindowsDirectory
+```
+
+The output includes `Version: 10.0.17763`.
+
+###<a id='install-vmware-tools'></a>Install VMware Tools
+
+Perform the following steps to install VMware Tools on the base VM:
+
+1. Under the VM **Summary** tab, select **Install VMware Tools**.
+1. Navigate to the `D:` drive and run `setup64.exe`.
+	<p class="note"><strong>Note</strong>: The VMware Tools install window might appear behind the Command Prompt window.</p>
+1. Restart the VM as required to finish the install.
+
+Step 2: One-time base VM customization (Enable WinRM)
+Step 3: Install MS Updates
+Step 4: Clone the base VM
+Step 5: Construct the BOSH Stemcell
+Step 6: Package the BOSH Stemcell
+
