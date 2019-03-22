@@ -3,19 +3,18 @@ title: Creating a vSphere Windows Stemcell
 owner: Windows
 ---
 
-This topic describes how to create a BOSH stemcell for Pivotal Application Service (PAS) for Windows on vSphere.
+This topic describes how to create a BOSH stemcell for Pivotal Application Service for Windows (PASW) on vSphere.
 
 ##<a id='overview'></a> Overview
 
-Before you can deploy PAS for Windows on vSphere,
+Before you can deploy PASW on vSphere,
 you must create a BOSH stemcell for Windows, a versioned operating system image.
 The BOSH stemcell you create in this topic is based on Windows Server 2019.
 
 To create a BOSH stemcell for Windows on vSphere, do the following:
 
 1. [Create a Base VM for the BOSH Stemcell](create-base-vm)
-  <p class="note"><strong>Note</strong>: If you already have the base VM, you do not need to perform this step.
-  Proceed to step 2, Enable WinRM.</p>
+  <p class="note"><strong>Note</strong>: If you already have the base VM, you do not need to perform this step. Proceed to step 2, Enable WinRM.</p>
 2. Enable WinRM
 3. Install MS Updates
 4. Clone the Base VM
@@ -24,14 +23,12 @@ To create a BOSH stemcell for Windows on vSphere, do the following:
 
 To maintain your BOSH stemcell, follow the instructions in Patch the BOSH Stemcell.
 
-##<a id='Prerequisites'></a> Prerequisites
+##<a id='prerequisites'></a> Prerequisites
 
-* A vSphere/vCenter environment.
-* User has access to a Windows Server, version 1709/1803/2019 ISO.
-* Download Stembuild from a release in “Stemcells for PCF(Windows)” on PivNet based on
-your local host system operating system
-the stemcell version you want to build.
-* Download LGPO to the same folder as stembuild.
+* Access to a vSphere/vCenter environment
+* Access to a Windows Server version 2019 ISO
+* `stembuild` from a release in [Stemcells for PCF (Windows)](https://network.pivotal.io/products/stemcells-windows-server) on Pivotal Network based on the operating system of your local host and the stemcell version that you want to build
+* Microsoft [Local Group Policy Object Utility (LGPO)](https://www.microsoft.com/en-us/download/details.aspx?id=55319) downloaded to the same folder as your `stembuild`
 
 <p class="note"><strong>Note:</strong> The instructions in this topic are based on vSphere 6.0 using vSphere Web Client.</p>
 
@@ -95,14 +92,20 @@ Perform the following steps to install Windows Server on the base VM:
 
 <p class="note warning"><strong>WARNING:</strong> You must complete the following procedure to verify your OS version before continuing.</p>
 
-Ensure you are using the correct the OS version by running the following PowerShell command on the Windows VM:
+Ensure that you are using the correct the OS version by running the following PowerShell command on the Windows VM:
 
 ```
-Get-CimInstance Win32_OperatingSystem | Select-Object
-Caption, Version, ServicePackMajorVersion, OSArchitecture, CSName, WindowsDirectory
+[System.Environment]::OSVersion.Version
 ```
 
-The output includes `Version: 10.0.17763`.
+The output should display the following:
+<pre class="terminal">
+[System.Environment]::OSVersion.Version
+
+Major    Minor    Build    Revision
+----     ----     -----    --------
+10        0       17763    0
+</pre>
 
 ###<a id='install-vmware-tools'></a>Install VMware Tools
 
