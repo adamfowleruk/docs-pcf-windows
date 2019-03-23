@@ -1,17 +1,17 @@
 ---
-title: Creating a vSphere Windows Stemcell
+title: Creating a Windows Stemcell for vSphere
 owner: Windows
 ---
 
-This topic describes how to create a BOSH stemcell for Pivotal Application Service for Windows (PASW) on vSphere.
+This topic describes how to create a BOSH stemcell for Pivotal Application Service for Windows (PASW) on VMware vSphere.
 
 ##<a id='overview'></a> Overview
 
-Before you can deploy PASW on vSphere,
-you must create a BOSH stemcell for Windows, a versioned operating system image.
+Before you can deploy PASW on VMware vSphere,
+you must create a **BOSH stemcell** for Windows, a versioned operating system image.
 The BOSH stemcell you create in this topic is based on Windows Server 2019.
 
-To create a BOSH stemcell for Windows on vSphere, do the following:
+To create a BOSH stemcell for Windows on VMware vSphere, do the following:
 
 1. [Create a Base VM for the BOSH Stemcell](create-base-vm)
   <p class="note"><strong>Note</strong>: If you already have the base VM, you do not need to perform this step. Proceed to step 2, Enable WinRM.</p>
@@ -25,12 +25,12 @@ To maintain your BOSH stemcell, follow the instructions in Patch the BOSH Stemce
 
 ##<a id='prerequisites'></a> Prerequisites
 
-* Access to a vSphere/vCenter environment
-* Access to a Windows Server version 2019 ISO
+* Access to a VMware vSphere environment
+* Access to a Windows Server 2019 ISO
 * `stembuild` from a release in [Stemcells for PCF (Windows)](https://network.pivotal.io/products/stemcells-windows-server) on Pivotal Network based on the operating system of your local host and the stemcell version that you want to build
 * Microsoft [Local Group Policy Object Utility (LGPO)](https://www.microsoft.com/en-us/download/details.aspx?id=55319) downloaded to the same folder as your `stembuild`
 
-<p class="note"><strong>Note:</strong> The instructions in this topic are based on vSphere 6.0 using vSphere Web Client.</p>
+<p class="note"><strong>Note:</strong> The instructions in this topic are based on VMware vSphere 6.0 using vSphere Web Client.</p>
 
 ##<a id='create-base-vm'></a>Create a Base VM for the BOSH Stemcell
 
@@ -41,17 +41,17 @@ from a volume-licensed ISO.
 
 Perform the following steps to upload the Windows ISO:
 
-1. Log in to vCenter.
-1. Click **Storage** in the vCenter menu.
-1. Choose a datastore and click or create the directory where you want the Windows ISO.
-1. Click **Upload a file to datastore**, and upload the Windows ISO.
-	<p class="note"><strong>Note</strong>: You might need to install the vSphere client web plugin to upload through your browser, or <code>scp</code> the file directly to the datastore server. For more information, see the VMware vSphere <a href="https://www.vmware.com/support/pubs/vsphere-esxi-vcenter-server-pubs.html">documentation</a>.</p>
+1. Log in to the vSphere Web Client.
+1. Click **Storage** and select a datastore.
+1. Select or create a directory where you want to upload the Windows ISO.
+1. Click **Upload a File** and select the Windows Server 2019 ISO.
+	<p class="note"><strong>Note</strong>: Alternatively, you can use the <code>scp</code> utility to copy the file directly to the datastore server.</p>
 
 ###<a id='create-customize-vm'></a>Create and Customize a New VM
 
 Perform the following steps to create and customize a new VM:
 
-1. In the vSphere client, click the **VMs and Templates** view to display the inventory objects.
+1. In the vSphere Web Client, click the **VMs and Templates** view to display the inventory objects.
 1. Right-click an object and select **New Virtual Machine** > **New Virtual Machine...**.
 1. On the **Select a creation type** page, select **Create a new virtual machine** and click **Next**.
   <%= image_tag('new-vm.png') %>
@@ -116,9 +116,69 @@ Perform the following steps to install VMware Tools on the base VM:
 	<p class="note"><strong>Note</strong>: The VMware Tools install window might appear behind the Command Prompt window.</p>
 1. Restart the VM as required to finish the install.
 
-Step 2: One-time base VM customization (Enable WinRM)
+##<a id='enable-winrm'></a> Enable WinRM on the Base VM
+
+To enable WinRM, power on the base VM and follow the instructions in one of the following sections:
+
+* [Enable WinRM in an Environment with Outbound Internet Access](#internet)
+* [Enable WinRM in an Environment without Internet Access](#no-internet)
+
+You need to perform this step only once.
+
+###<a id='internet'></a> Enable WinRM in an Environment with Outbound Internet Access
+
+To enable WinRM in an environment with outbound internet access,
+run the following commands in PowerShell:
+
+
+1. ```[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12```
+
+1. ```Invoke-WebRequest -UseBasicParsing -OutFile 'BOSH.WinRM.psm1' -Uri 'https://raw.githubusercontent.com/cloudfoundry-incubator/bosh-windows-stemcell-builder/master/bosh-psmodules/modules/BOSH.WinRM/BOSH.WinRM.psm1'```
+
+1. ```Import-Module ./BOSH.WinRM.psm1```
+
+1. ```Enable-WinRM```
+
+
+###<a id='no-internet'></a> Enable WinRM in an Environment without Internet Access
+
+To enable WinRM in an environment without internet access,
+do the following:
+
+1. Copy the contents of the [Enable-WinRM PowerShell script](https://raw.githubusercontent.com/cloudfoundry-incubator/bosh-windows-stemcell-builder/master/bosh-psmodules/modules/BOSH.WinRM/BOSH.WinRM.psm1)
+from GitHub to a file named `BOSH.WinRM.psm1`.
+
+1. In PowerShell, run the following commands:
+
+  1. ```Import-Module BOSH.WinRM.psm1```
+  1. ```Enable-WinRM```
+
 Step 3: Install MS Updates
-Step 4: Clone the base VM
+
+##<a id='install-windows-updates'></a> Install Windows Updates
+
+Install Windows updates on the base VM using your preferred procedure.
+For example, you can install Windows updates on the base VM by following the steps below.
+
+1. On the base VM, run the **SConfig** utility.
+1. Select option number 6, **Download and Install Updates**.
+1. Select **A** for **(A)ll updates**.
+1. For the **Select an option**, select **(A)ll updates**.
+
+You might need to restart the base VM while installing updates.
+
+##<a id='clone-vm'></a> Clone the Base VM
+
+To clone the base VM, do the following in the vSphere Web Client:
+
+1. Power down the base VM.
+1. Right-click the base VM.
+1. Select **Clone** > **Clone to Virtual Machine...**.
+  <%= image_tag('clone-vm.png') %>
+1. Ensure that you can create the VM that can be used to build a stemcell after the next Microsoft Patch Tuesday Updates.
+
+<p class='note warning'><strong>Warning:</strong> Do not delete the base VM. You run Microsoft security updates on this VM.</p>
+
 Step 5: Construct the BOSH Stemcell
 Step 6: Package the BOSH Stemcell
 
