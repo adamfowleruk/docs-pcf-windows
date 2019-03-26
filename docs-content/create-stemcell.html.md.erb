@@ -67,13 +67,14 @@ To create and customize a base VM, do the following:
 1. On the **Select compatibility** page, for the **Compatible with** configuration setting, select **ESXi 6.0 and later** and click **Next**.
 1. On the **Select a guest OS** page, perform the following steps:
   1. For **Guest OS Family**, select **Windows**.
-  1. For **Guest OS Version**, select **Microsoft Windows Server 2016**.
+  1. For **Guest OS Version**, select **Microsoft Windows Server 2019**. If **Microsoft Windows Server 2019** is not
+     available, select **Microsoft Windows Server 2016**.
   1. Click **Next**.
 1. On the **Customize hardware** page, configure the VM hardware using the information below and click **Next**.
   1. For **New Hard disk**, specify 30 GB or greater.
   1. For **New CD\DVD Drive**, perform the following steps:
 		1. Select **Datastore ISO File**.
-		1. Select the ISO file you uploaded to your datastore and click **OK**.
+		1. Select the Windows Server 2019 ISO file you uploaded to your datastore and click **OK**.
 		1. Enable the **Connect At Power On** checkbox.
 1. Review the configuration settings on the **Ready to complete** page and click **Finish**.
 
@@ -85,13 +86,11 @@ To install Windows Server on the base VM, do the following:
   <%= image_tag('power-on.png') %>
 1. Select **Windows Server Standard**.
 1. Select **Custom installation**.
-1. Complete the installation process and enter a password for the Administrator user. BOSH later randomizes this password.
+1. Complete the installation process and enter a password for the Administrator user.
 
 ###<a name='verify-os'></a>Verify OS
 
-<p class="note warning"><strong>WARNING:</strong> You must complete the following procedure to verify your OS version before continuing.</p>
-
-Ensure that you are using the correct the OS version by running the following PowerShell command on the Windows VM:
+To verify that you are using the correct the OS version, run the following PowerShell command on the base VM:
 
 <pre>
 &#91System.Environment]::OSVersion.Version
@@ -108,12 +107,11 @@ Major    Minor    Build    Revision
 
 ###<a name='install-vmware-tools'></a>Install VMware Tools
 
-Perform the following steps to install VMware Tools on the base VM:
+To install VMware Tools on the base VM, do the following:
 
-1. Under the VM **Summary** tab, select **Install VMware Tools**.
+1. In the vSphere Web Client, right-click the base VM and select **Guest OS** > **Install VMware Tools**.
 1. Navigate to the `D:` drive and run `setup64.exe`.
-	<p class="note"><strong>Note</strong>: The VMware Tools install window might appear behind the Command Prompt window.</p>
-1. Restart the VM as required to finish the install.
+1. Restart the VM to complete the installation.
 
 ##<a id='enable-winrm'></a> Enable WinRM on the Base VM
 
@@ -137,32 +135,28 @@ run the following commands in PowerShell:
 
 ###<a name='no-internet'></a> Enable WinRM in an Environment without Internet Access
 
-To enable WinRM in an environment without Internet access, follow the steps below:
-
-1. If not enabled, enable copy and paste operations on the powered-off
-base VM in vSphere.
-
-1. Power on the base VM.
+To enable WinRM in an environment without Internet access, follow the step below.
+The base VM must have copy and paste operations enabled.
 
 1. Copy the contents of the [Enable-WinRM PowerShell script](https://raw.githubusercontent.com/cloudfoundry-incubator/bosh-windows-stemcell-builder/master/bosh-psmodules/modules/BOSH.WinRM/BOSH.WinRM.psm1)
 from GitHub to a file named `BOSH.WinRM.psm1` on the base VM.
 
 1. In PowerShell on the base VM, run the following commands:
 
-  1. <pre>Import-Module BOSH.WinRM.psm1</pre>
+  1. <pre>Import-Module ./BOSH.WinRM.psm1</pre>
   1. <pre>Enable-WinRM</pre>
 
 ##<a id='install-windows-updates'></a> Install Windows Updates
 
 Install Windows updates on the base VM using your preferred procedure.
-For example, you can install Windows updates on the base VM by following the steps below.
+For example, you can install Windows updates by following the steps below.
 
 1. On the base VM, run the **SConfig** utility.
-1. Select option number 6, **Download and Install Updates**.
-1. Select **A** for **(A)ll updates**.
-1. For the **Select an option**, select **(A)ll updates**.
+1. Select **Download and Install Updates**.
+1. Enter **A** to search for all updates.
+1. For **Select an option**, enter **A** to install all updates.
 
-You might need to restart the base VM while installing updates.
+You may need to restart the base VM while installing the updates.
 
 ##<a id='clone-vm'></a> Clone the Base VM
 
@@ -170,9 +164,9 @@ To clone the base VM, do the following in the vSphere Web Client:
 
 1. Power down the base VM.
 1. Right-click the base VM.
-1. Select **Clone** > **Clone to Virtual Machine**. This clone is your **target VM**.
+1. Select **Clone** > **Clone to Virtual Machine**. This clone is your target VM.
   <%= image_tag('clone-vm.png') %>
-1. Save the base VM. You run Windows updates on this VM for future stemcells.
+1. Save the base VM. You will run Windows updates on this VM for future stemcells.
 
 ##<a id='construct-stemcell'></a> Construct the BOSH Stemcell
 
@@ -186,19 +180,19 @@ To construct the BOSH stemcell, do the following:
 1. Run the following command from your local host:
 
     ```
-    ./STEMBUILD-BINARY construct -winrm-ip TARGET-VM-IP -winrm-username TARGET-USERNAME -winrm-password 'TARGET-VM-PASSWORD'
+    ./STEMBUILD-BINARY construct -winrm-ip 'TARGET-VM-IP' -winrm-username 'TARGET-USERNAME' -winrm-password 'TARGET-VM-PASSWORD'
     ```
     Where:
-    * `STEMBUILD-BINARY` is the `stembuild` binary file for your local host operating system version and the
-    stemcell version that you want to build. For example, `stembuild-windows-2019-2`.
+    * `STEMBUILD-BINARY` is the `stembuild` file for the version of your local host operating system and the
+    version of the stemcell that you want to build. For example, `stembuild-windows-2019-2`.
     * `TARGET-VM-IP` is the IP address of your target VM.
     * `TARGET-USERNAME` is the username of an account with Administrator privileges.
     * `TARGET-VM-PASSWORD` is the password for the Administrator account. The password must be enclosed in single quotes.
   <p class='note'><strong>Note:</strong> During <code>construct</code> execution, the
 WinRM connection may terminate. To view the status of <code>construct</code>, you must log in to the
-target VM. <code>construct</code> does not validate the WinRM connection before starting the upload of the artifact.</p>
+target VM.</p>
 
-This command creates a powered-off Windows VM in your vSphere environment and may take up to an hour to complete.
+This operation results in a powered-off Windows VM in your vSphere environment and may take up to an hour to complete.
 
 ##<a id='package-stemcell'></a> Package the BOSH Stemcell
 
@@ -206,7 +200,7 @@ Before packaging the BOSH stemcell, collect the following information:
 
 * vCenter inventory path in the `MY-DATA-CENTER/vm/MY-FOLDER/MY-VM` format where:
   * `MY-DATA-CENTER` is the name of the data center.
-  * `vm` is the static string, `vm`.
+  * `vm` is a static string.
   * `MY-FOLDER` is the name of the folder that contains the VM.
   * `MY-VM` is the name of the target VM.
 * vCenter username
@@ -221,8 +215,8 @@ To package the BOSH stemcell, run the following command from your local host:
 
 Where:
 
-* `STEMBUILD-BINARY` is the `stembuild` binary file for your local host operating system version and the
-  stemcell version that you want to build. For example, `stembuild-windows-2019-2`.
+* `STEMBUILD-BINARY` is the `stembuild` file for the version of your local host operating system and the
+version of the stemcell that you want to build. For example, `stembuild-windows-2019-2`.
 * `VCENTER-URL` is the URL of your vCenter.
 * `VCENTER-USERNAME` is the username of your account in vCenter.
 * `VCENTER-PASSWORD` is your password. The password must be enclosed in single quotes.
@@ -240,9 +234,9 @@ releases Windows updates on the first Tuesday of each month.
 
 To update your base VM, do the following:
 
-1. [Install Windows Updates](#install-windows-updates) on the base VM
-1. [Clone the Base VM](#clone-vm)
-1. [Construct the BOSH Stemcell](#construct-stemcell)
-1. [Package the BOSH Stemcell](#package-stemcell)
-1. Replace the existing stemcell in the Ops Manager stemcell library with this new stemcell
-1. Deploy the updated stemcell
+1. [Install Windows Updates](#install-windows-updates) on the base VM.
+1. [Clone the Base VM](#clone-vm).
+1. [Construct the BOSH Stemcell](#construct-stemcell).
+1. [Package the BOSH Stemcell](#package-stemcell).
+1. Replace the existing stemcell in the Ops Manager stemcell library with this new stemcell.
+1. Deploy the updated stemcell.
