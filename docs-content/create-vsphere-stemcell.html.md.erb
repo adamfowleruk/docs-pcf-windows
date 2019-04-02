@@ -13,8 +13,7 @@ The BOSH stemcell that you create in this topic is based on Windows Server 2019.
 To create a BOSH stemcell for Windows on vSphere, do the following:
 
 1. [Create a Base VM for the BOSH Stemcell](#create-base-vm)
-  <p class="note"><strong>Note</strong>: If you already have the base VM, you do not need to perform this step. Proceed to <a href='#enable-winrm'>Enable WinRM on the Base VM</a>.</p>
-1. [Enable WinRM on the Base VM](#enable-winrm)
+  <p class="note"><strong>Note</strong>: If you already have the base VM, you do not need to perform this step. Proceed to <a href='#install-windows-updates'>Install Windows Updates</a>.</p>
 1. [Install Windows Updates](#install-windows-updates)
 1. [Clone the Base VM](#clone-vm)
 1. [Construct the BOSH Stemcell](#construct-stemcell)
@@ -110,40 +109,6 @@ To install VMware Tools on the base VM, do the following:
 1. In the vSphere Web Client, right-click the base VM and select **Guest OS** > **Install VMware Tools**.
 1. Navigate to the `D:` drive and run `setup64.exe`.
 1. Restart the VM to complete the installation.
-
-##<a id='enable-winrm'></a> Enable WinRM on the Base VM
-
-To enable WinRM, follow the instructions in one of the sections below. You need to perform this step only once.
-
-* [Enable WinRM in an Environment with Outbound Internet Access](#internet)
-* [Enable WinRM in an Environment without Internet Access](#no-internet)
-
-###<a name='internet'></a> Enable WinRM in an Environment with Outbound Internet Access
-
-To enable WinRM in an environment with outbound Internet access, power on the base VM and
-run the following commands in PowerShell:
-
-1. <pre>[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12</pre>
-
-1. <pre>Invoke-WebRequest -UseBasicParsing -OutFile 'BOSH.WinRM.psm1' -Uri 'https://raw.githubusercontent.com/cloudfoundry-incubator/bosh-windows-stemcell-builder/master/bosh-psmodules/modules/BOSH.WinRM/BOSH.WinRM.psm1'</pre>
-
-1. <pre>Import-Module ./BOSH.WinRM.psm1</pre>
-
-1. <pre>Enable-WinRM</pre>
-
-###<a name='no-internet'></a> Enable WinRM in an Environment without Internet Access
-
-To enable WinRM in an environment without Internet access, follow the step below.
-The base VM must have copy and paste operations enabled.
-
-1. Copy the contents of the [Enable-WinRM PowerShell script](https://raw.githubusercontent.com/cloudfoundry-incubator/bosh-windows-stemcell-builder/master/bosh-psmodules/modules/BOSH.WinRM/BOSH.WinRM.psm1)
-from GitHub to a file named `BOSH.WinRM.psm1` on the base VM.
-
-1. In PowerShell on the base VM, run the following commands:
-
-  1. <pre>Import-Module ./BOSH.WinRM.psm1</pre>
-  1. <pre>Enable-WinRM</pre>
-
 ##<a id='install-windows-updates'></a> Install Windows Updates
 
 Install Windows updates on the base VM using your preferred procedure.
