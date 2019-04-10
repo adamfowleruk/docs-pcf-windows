@@ -147,9 +147,9 @@ Before constructing the BOSH stemcell, collect the following information:
 * vCenter password
 * vCenter URL
 
-<p class="note"><strong>Note:</strong> The target VM must be routable from your local host.</p>
+<p class="note"><strong>Note:</strong> The target VM must be routable from your local host. Before running the <code>construct</code> command, ensure you are logged out of the target VM.</p>
 
-To construct the BOSH stemcell, do the following, run the following command from your local host:
+To construct the BOSH stemcell, run the following command from your local host:
 
 ```
 ./STEMBUILD-BINARY construct -vm-ip 'TARGET-VM-IP' -vm-username 'TARGET-USERNAME' -vm-password 'TARGET-VM-PASSWORD' -vcenter-url 'VCENTER-URL' -vcenter-username 'VCENTER-USERNAME' -vcenter-password 'VCENTER-PASSWORD' -vm-inventory-path 'INVENTORY-PATH'
@@ -167,7 +167,7 @@ version of the stemcell that you want to build. For example, `stembuild-windows-
 * `VCENTER-PASSWORD` is your password. The password must be enclosed in single quotes.
 * `INVENTORY-PATH` is the vCenter inventory path to the target VM.
 
-<p class='note'><strong>Note:</strong> This operation may take up to an hour to complete and results in a powered-off Windows VM in your vSphere environment.
+<p class='note'><strong>Note:</strong> This operation may take up to an hour to complete and results in a powered-off target Windows VM in your vSphere environment.
 During <code>construct</code> execution, the WinRM connection terminates. This is the expected behavior, and the <code>construct</code> command is still being executed.
 Do not attempt to re-run the <code>construct</code> command.</p>
 
