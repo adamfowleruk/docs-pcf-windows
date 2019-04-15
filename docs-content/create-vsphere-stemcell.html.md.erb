@@ -17,9 +17,10 @@ To create a BOSH stemcell for Windows on vSphere, do the following:
 1. [Clone the Base VM](#clone-vm)
 1. [Construct the BOSH Stemcell](#construct-stemcell)
 1. [Package the BOSH Stemcell](#package-stemcell)
+1. [Upload Stemcell to Ops Manager](#upload-stemcell)
 
 If you already have a BOSH stemcell for Windows on vSphere,
-see [Next Steps](#patch-stemcell).
+see [Monthly Stemcell Upgrade](#upgrade-stemcell).
 
 ##<a id='prerequisites'></a> Prerequisites
 
@@ -211,11 +212,11 @@ version of the stemcell that you want to build. For example, `stembuild-windows-
 <p class='note'><strong>Note:</strong> This command creates a stemcell on your local host in the folder where you ran the command and may
 take up to 30 minutes to complete.</p>
 
-##<a id='next-steps'></a>Next Steps
+##<a id='upload-stemcell'></a>Upload Stemcell to OpsMgr
 
 You can now upload this stemcell to your Stemcell Library on OpsManager and deploy the PASW tile. 
 
-##<a id='patch-stemcell'></a>Monthly Stemcell Upgrades
+##<a id='upgrade-stemcell'></a>Monthly Stemcell Upgrades
 
 After Microsoft releases operating system updates, you should upgrade your BOSH stemcell. Microsoft typically
 releases Windows updates on the second Tuesday of each month.
