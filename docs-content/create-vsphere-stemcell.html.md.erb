@@ -112,7 +112,7 @@ To install VMware Tools on the base VM, do the following:
 ##<a id='install-windows-updates'></a>Step 2: Install Windows Updates
 
 Install Windows updates on the base VM using your preferred procedure.
-For example, you can install Windows updates by following the steps below.
+For example, you can install Windows updates by following the steps below. The below process will require internet access. 
 
 1. On the base VM, run the **SConfig** utility.
 1. Select **Download and Install Updates**.
@@ -208,15 +208,19 @@ version of the stemcell that you want to build. For example, `stembuild-windows-
 * `VCENTER-PASSWORD` is your password. The password must be enclosed in single quotes.
 * `INVENTORY-PATH` is the vCenter inventory path to the target VM.
 
-<p class='note'><strong>Note:</strong> This command creates a stemcell TAR file on your local host in the folder where you ran the command and may
+<p class='note'><strong>Note:</strong> This command creates a stemcell on your local host in the folder where you ran the command and may
 take up to 30 minutes to complete.</p>
 
-##<a id='patch-stemcell'></a>Next Steps
+##<a id='next-steps'></a>Next Steps
 
-After Microsoft releases operating system updates, you should patch your BOSH stemcell. Microsoft typically
-releases Windows updates on the first Tuesday of each month.
+You can now upload this stemcell to your Stemcell Library on OpsManager and deploy the PASW tile. 
 
-To patch your BOSH stemcell, do the following:
+##<a id='patch-stemcell'></a>Monthly Stemcell Upgrades
+
+After Microsoft releases operating system updates, you should upgrade your BOSH stemcell. Microsoft typically
+releases Windows updates on the second Tuesday of each month.
+
+To upgrade your BOSH stemcell, do the following:
 
 1. [Install Windows Updates](#install-windows-updates) on the base VM.
 1. [Clone the Base VM](#clone-vm).
