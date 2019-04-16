@@ -8,7 +8,7 @@ This topic describes how to create a BOSH stemcell for Pivotal Application Servi
 ##<a id='overview'></a> Overview
 
 Before you can deploy PAS for Windows on vSphere, you must create a BOSH stemcell for Windows, a versioned operating system image.
-The BOSH stemcell that you create in this topic is based on Windows Server, version 1803.
+The BOSH stemcell that you create in this topic is based on Windows Server, version 1709.
 
 To create a BOSH stemcell for Windows on vSphere, do the following:
 
@@ -25,7 +25,7 @@ see [Monthly Stemcell Upgrades](#upgrade-stemcell).
 ##<a id='prerequisites'></a> Prerequisites
 
 * A vSphere environment
-* A Windows Server, version 1803 ISO
+* A Windows Server, version 1709 ISO
 * `stembuild` from a release in [Stemcells for PCF (Windows)](https://network.pivotal.io/products/stemcells-windows-server) on Pivotal Network that corresponds to the operating system of your local host and the stemcell version that you want to build
 * Microsoft [Local Group Policy Object Utility (LGPO)](https://www.microsoft.com/en-us/download/details.aspx?id=55319) downloaded to the same folder as your `stembuild`
 
@@ -34,15 +34,15 @@ see [Monthly Stemcell Upgrades](#upgrade-stemcell).
 This section describes how to create, configure, and verify a base VM for Windows
 from a volume-licensed ISO.
 
-###<a name='upload-windows-iso'></a>Upload the Windows Server, Version 1803 ISO
+###<a name='upload-windows-iso'></a>Upload the Windows Server, Version 1709 ISO
 
-To upload the Windows Server, version 1803 ISO to vSphere, do the following:
+To upload the Windows Server, version 1709 ISO to vSphere, do the following:
 
 1. Log in to the vSphere Web Client.
   <p class="note"><strong>Note:</strong> The instructions in this topic are based on vSphere 6.0.</p>
 1. Click **Storage** and select a datastore.
-1. Select or create a folder where you want to upload the Windows Server, version 1803 ISO.
-1. Click **Upload a File** and select the Windows Server, version 1803 ISO.
+1. Select or create a folder where you want to upload the Windows Server, version 1709 ISO.
+1. Click **Upload a File** and select the Windows Server, version 1709 ISO.
 
 You can use the `scp` utility instead of the vSphere Web Client to copy the file directly to the datastore server.
 
@@ -72,7 +72,7 @@ To create and customize a base VM, do the following:
   1. For **New Hard disk**, specify 30 GB or greater.
   1. For **New CD\DVD Drive**, do the following:
 		1. Select **Datastore ISO File**.
-		1. Select the Windows Server, version 1803 ISO file you uploaded to your datastore and click **OK**.
+		1. Select the Windows Server, version 1709 ISO file you uploaded to your datastore and click **OK**.
 		1. Enable the **Connect At Power On** checkbox.
 1. Review the configuration settings on the **Ready to complete** page and click **Finish**.
 
@@ -95,7 +95,7 @@ Get-CimInstance Win32_OperatingSystem | Select-Object
 Caption, Version, ServicePackMajorVersion, OSArchitecture, CSName, WindowsDirectory
 ```
 
-The output should include `Version: 10.0.17134`.
+The output should include `Version: 10.0.16299`.
 
 ###<a name='install-vmware-tools'></a>Install VMware Tools
 
@@ -154,7 +154,7 @@ To construct the BOSH stemcell, run the following command from your local host:
 Where:
 
 * `STEMBUILD-BINARY` is the `stembuild` file for the version of your local host operating system and the
-version of the stemcell that you want to build. For example, `stembuild-windows-1803-7`.
+version of the stemcell that you want to build. For example, `stembuild-windows-1709-19`.
 * `TARGET-VM-IP` is the IP address of your target VM.
 * `TARGET-USERNAME` is the username of an account with Administrator privileges.
 * `TARGET-VM-PASSWORD` is the password for the Administrator account. The password must be enclosed in single quotes.
@@ -198,7 +198,7 @@ To package the BOSH stemcell, run the following command from your local host:
 Where:
 
 * `STEMBUILD-BINARY` is the `stembuild` file for the version of your local host operating system and the
-version of the stemcell that you want to build. For example, `stembuild-windows-1803-7`.
+version of the stemcell that you want to build. For example, `stembuild-windows-1709-19`.
 * `VCENTER-URL` is the URL of your vCenter.
 * `VCENTER-USERNAME` is the username of your account in vCenter.
 * `VCENTER-PASSWORD` is your password. The password must be enclosed in single quotes.
