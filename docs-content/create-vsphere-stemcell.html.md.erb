@@ -17,10 +17,10 @@ To create a BOSH stemcell for Windows on vSphere, do the following:
 1. [Clone the Base VM](#clone-vm)
 1. [Construct the BOSH Stemcell](#construct-stemcell)
 1. [Package the BOSH Stemcell](#package-stemcell)
-1. [Upload Stemcell to Ops Manager](#upload-stemcell)
+1. [Upload the BOSH Stemcell to Ops Manager](#upload-stemcell)
 
 If you already have a BOSH stemcell for Windows on vSphere,
-see [Monthly Stemcell Upgrade](#upgrade-stemcell).
+see [Monthly Stemcell Upgrades](#upgrade-stemcell).
 
 ##<a id='prerequisites'></a> Prerequisites
 
@@ -113,7 +113,7 @@ To install VMware Tools on the base VM, do the following:
 ##<a id='install-windows-updates'></a>Step 2: Install Windows Updates
 
 Install Windows updates on the base VM using your preferred procedure.
-For example, you can install Windows updates by following the steps below. The below process will require internet access. 
+For example, you can install Windows updates by following the steps below. This procedure requires internet access.
 
 1. On the base VM, run the **SConfig** utility.
 1. Select **Download and Install Updates**.
@@ -212,9 +212,13 @@ version of the stemcell that you want to build. For example, `stembuild-windows-
 <p class='note'><strong>Note:</strong> This command creates a stemcell on your local host in the folder where you ran the command and may
 take up to 30 minutes to complete.</p>
 
-##<a id='upload-stemcell'></a>Upload Stemcell to OpsMgr
+##<a id='upload-stemcell'></a>Upload the BOSH Stemcell to Ops Manager
 
-You can now upload this stemcell to your Stemcell Library on OpsManager and deploy the PASW tile. 
+To upload the BOSH stemcell to Ops Manager, do the following:
+
+1. In Ops Manager, navigate to **Stemcell Library**.
+1. Upload your BOSH stemcell.
+1. Deploy the PAS for Windows tile.
 
 ##<a id='upgrade-stemcell'></a>Monthly Stemcell Upgrades
 
