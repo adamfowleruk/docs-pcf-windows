@@ -90,16 +90,12 @@ To install Windows Server on the base VM, do the following:
 
 To verify that you are using the correct OS version, run the following PowerShell command on the base VM:
 
-<pre><code>&#91;System.Environment&#93;::OSVersion.Version</code></pre>
+```
+Get-CimInstance Win32_OperatingSystem | Select-Object
+Caption, Version, ServicePackMajorVersion, OSArchitecture, CSName, WindowsDirectory
+```
 
-The output should display the following:
-
-<pre class="terminal">
-&#91;System.Environment&#93;::OSVersion.Version
-Major    Minor    Build    Revision
-----     ----     -----    --------
-10        0       17763    0
-</pre>
+The output should include `Version: 10.0.17134`.
 
 ###<a name='install-vmware-tools'></a>Install VMware Tools
 
